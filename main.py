@@ -5,11 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from server import chat
 
-app = FastAPI(
-    title="Chat Application",
-    description="A simple chat application using FastAPI and WebSockets.",
-    version="1.0.0",
-)
+app = FastAPI()
 
 _path = os.path.dirname(os.path.abspath(__file__))
 

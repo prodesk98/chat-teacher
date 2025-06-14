@@ -109,7 +109,7 @@ function onSubmitSendMsg() {
             </div>
             <div>
                 <h3 class="font-medium text-gray-800">Study Assistant</h3>
-                <div class="text-indigo-500 mt-1" id="${contentId}">
+                <div class="text-gray-700 mt-1" id="${contentId}">
                     <span class="typing-dot w-2 h-2 bg-indigo-500 rounded-full inline-block mx-1"></span>
                     <span class="typing-dot w-2 h-2 bg-indigo-500 rounded-full inline-block mx-1"></span>
                     <span class="typing-dot w-2 h-2 bg-indigo-500 rounded-full inline-block mx-1"></span>
@@ -180,7 +180,18 @@ function loadChatHistory() {
             const messageElement = document.createElement('div');
             messageElement.className = `message ${msg.isUser ? 'user' : 'ai'} bg-${msg.isUser ? 'primary-50' : 'white'} rounded-xl p-4 mb-4 shadow-sm border border-${msg.isUser ? 'indigo-100' : 'gray-100'}`;
             messageElement.innerHTML = `
-                <div class="flex ${msg.isUser ? 'justify-end' : ''}">
+                 <div class="flex ${msg.isUser ? 'justify-end' : ''}">
+                    ${msg.isUser ? '' : `
+                        <div class="mr-3 mt-0.5 flex-shrink-0">
+                            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+                                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-school">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M22 9l-10 -4l-10 4l10 4l10 -4v6"></path>
+                                    <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    `}
                     <div class="${msg.isUser ? 'text-right max-w-full' : ''}">
                         <h3 class="font-medium text-gray-800">${msg.isUser ? 'You' : 'Study Assistant'}</h3>
                         <div class="text-gray-700 mt-1">${msg.html}</div>
