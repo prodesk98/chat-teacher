@@ -94,15 +94,6 @@ document.addEventListener('DOMContentLoaded', function () {
             onSubmitSendMsg();
         }
     });
-
-    // Add example prompts functionality
-    document.querySelectorAll('.bg-gray-200').forEach(button => {
-        button.addEventListener('click', function () {
-            messageInput.value = this.textContent.trim();
-            messageInput.focus();
-        });
-    });
-
     // Initialize textarea height
     messageInput.style.height = 'auto';
 
@@ -123,14 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
             messages: []
         };
         chatContainer.innerHTML = '';
-        // Add a welcome message
-        const welcomeMsg = chatContainer.querySelector('.message.ai');
-        if (welcomeMsg) {
-            currentChat.messages.push({
-                isUser: false,
-                html: welcomeMsg.innerHTML
-            });
-        }
     }
 
     newChatBtn.addEventListener('click', startNewChat);
