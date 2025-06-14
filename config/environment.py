@@ -8,7 +8,7 @@ class Environment(BaseModel):
     Environment configuration for the application.
     """
     DEBUG: bool = bool(environ.get("DEBUG", "true") == "true")
-    DATABASE_URL: str = environ.get("DATABASE_URL", "sqlite:///chat-teacher.db")
+    DATABASE_URL: str = environ.get("DATABASE_URL", "sqlite:///data/chat-teacher.db")
 
     OPENAI_BASE_URL: str = environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
     OPENAI_API_KEY: str = environ.get("OPENAI_API_KEY")

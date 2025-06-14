@@ -1,0 +1,18 @@
+services:
+  chat-teacher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - chat-teacher-data:/data
+    ports:
+      - "8000:8000"
+    environment:
+        - DATABASE_URL=sqlite:///data/chat-teacher.db
+        - OPENAI_API_KEY=${OPENAI_API_KEY}
+        - OPENAI_API_BASE=${OPENAI_API_BASE}
+
+volumes:
+  chat-teacher-data:
