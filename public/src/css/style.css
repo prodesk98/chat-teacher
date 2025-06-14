@@ -40,7 +40,6 @@
     }
 
     .typing-dot {
-        @apply w-2 h-2 bg-indigo-500 rounded-full inline-block mx-1;
         animation: bounce 1.5s infinite ease-in-out;
     }
 

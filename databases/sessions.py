@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
-from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+from sqlalchemy.orm import declarative_base, sessionmaker, relationship, Session
+from config import env
 
-engine = create_engine("sqlite:///chat-teacher.db", echo=True)
+engine = create_engine(env.DATABASE_URL, echo=True)
 Base = declarative_base()
 
 
@@ -28,7 +29,6 @@ class Message(Base):
 # Create the database tables
 Base.metadata.create_all(engine)
 
-def get_db():
+def get_db() -> Session:
     """Get a database session."""
-    Session = sessionmaker(bind=engine)
-    return Session()
+    return sessionmaker(bind=engine)()
