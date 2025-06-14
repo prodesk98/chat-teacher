@@ -151,46 +151,56 @@ function loadChatHistory() {
     chatContainer.innerHTML = '';
 
     // Get chat
-    const chat = call_api(`/chat/${currentChat.id}`, 'GET').then(r => r.json());
-    if (chat === null) return;
+    call_api(`/chat/${currentChat.id}`, 'GET').then(async (r) => {
+        const chat = await r.json();
+        if (chat === null) return;
 
-    // Render chat title
-    const chatTitle = document.getElementById('chatTitle');
-    if (chatTitle) chatTitle.textContent = currentChat.title || 'Chat';
-    // Render chat messages
-    let messages = chat.messages || [];
-    // Ensure messages are in the correct format
-    messages = messages.map(msg => {
-        return {
-            isUser: msg.role === 'user',
-            html: msg.content || ''
-        };
-    });
+        // Render chat title
+        const chatTitle = document.getElementById('chatTitle');
+        if (chatTitle) chatTitle.textContent = currentChat.title || 'Chat';
+        // Render chat messages
+        let messages = chat.messages || [];
+        // Ensure messages are in the correct format
+        messages = messages.map(msg => {
+            return {
+                isUser: msg.role === 'user',
+                html: msg.content || ''
+            };
+        });
 
-    // Sort messages by ID (if needed)
-    messages.sort((a, b) => a.id - b.id);
+        // Sort messages by ID (if needed)
+        messages.sort((a, b) => a.id - b.id);
 
-    // Render messages
-    messages.forEach(msg => {
-        const messageElement = document.createElement('div');
-        messageElement.className = `message ${msg.isUser ? 'user' : 'ai'} bg-${msg.isUser ? 'primary-50' : 'white'} rounded-xl p-4 mb-4 shadow-sm border border-${msg.isUser ? 'indigo-100' : 'gray-100'}`;
-        messageElement.innerHTML = `
-            <div class="flex ${msg.isUser ? 'justify-end' : ''}">
-                <div class="${msg.isUser ? 'text-right max-w-full' : ''}">
-                    <h3 class="font-medium text-gray-800">${msg.isUser ? 'You' : 'Study Assistant'}</h3>
-                    <div class="text-gray-700 mt-1">${msg.html}</div>
-                </div>
-                <div class="ml-3 mt-0.5 flex-shrink-0">
-                    <div class="w-8 h-8 rounded-full bg-${msg.isUser ? 'indigo-500' : 'primary'} flex items-center justify-center">
-                        <i class="fas fa-${msg.isUser ? 'user' : 'graduation-cap'} text-white text-sm"></i>
+        // Render messages
+        messages.forEach(msg => {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${msg.isUser ? 'user' : 'ai'} bg-${msg.isUser ? 'primary-50' : 'white'} rounded-xl p-4 mb-4 shadow-sm border border-${msg.isUser ? 'indigo-100' : 'gray-100'}`;
+            messageElement.innerHTML = `
+                <div class="flex ${msg.isUser ? 'justify-end' : ''}">
+                    <div class="${msg.isUser ? 'text-right max-w-full' : ''}">
+                        <h3 class="font-medium text-gray-800">${msg.isUser ? 'You' : 'Study Assistant'}</h3>
+                        <div class="text-gray-700 mt-1">${msg.html}</div>
                     </div>
+                    ${msg.isUser ?
+                        '<div class="ml-3 mt-0.5 flex-shrink-0">\n' +
+                    '<div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white">\n' +
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"\n' +
+                    'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"\n' +
+                    'class="icon icon-tabler icons-tabler-outline icon-tabler-user">\n' +
+                    '<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>\n' +
+                    '<path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>\n' +
+                    '<path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>\n' +
+                    '</svg>\n' +
+                    '</div>\n' +
+                    '</div>' : ''
+                    }
                 </div>
-            </div>
-        `;
-        chatContainer.appendChild(messageElement);
-    });
+            `;
+            chatContainer.appendChild(messageElement);
+        });
 
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
