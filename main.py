@@ -14,7 +14,7 @@ templates = Jinja2Templates(directory="%s/public/templates" % _path)
 
 chat = APIRouter(
     prefix="/chat",
-    tags=["admin"],
+    tags=["chat"],
     responses={404: {"description": "Not found"}},
     dependencies=[],
 )
