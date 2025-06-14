@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Teacher - Your Educational AI Assistant</title>
+    <link href="/public/css/style.css" rel="stylesheet" />
+</head>
+<body class="font-sans">
+    <div class="flex flex-col h-screen max-w-4xl mx-auto bg-white shadow-xl">
+        <!-- Header -->
+        {% include 'components/header.html' %}
+
+        <!-- Chat Container -->
+        <div id="chatContainer" class="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-indigo-50 to-white scrollbar-hide">
+            <!-- Welcome message -->
+            {% include 'fragments/message_agent.html' %}
+
+            <!-- Sample chat history -->
+            {% include 'fragments/message_user.html' %}
+        </div>
+
+        <!-- Input Area -->
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+            <div class="flex items-end space-x-3">
+                <div class="flex-1 bg-white border border-gray-300 rounded-lg shadow-sm">
+                    <label for="messageInput"></label><textarea
+                        id="messageInput"
+                        class="w-full p-3 resize-none focus:outline-none rounded-lg"
+                        placeholder="Ask a question about any subject..."
+                        rows="1"
+                    ></textarea>
+                    <div class="px-3 pb-3 flex justify-between items-center">
+                        <div class="flex space-x-2">
+                            <button class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                                <i class="fas fa-paperclip text-gray-500"></i>
+                            </button>
+                        </div>
+                        <button
+                            id="sendButton"
+                            class="bg-primary hover:bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center transition"
+                        >
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-telegram">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/public/js/tailwindcss.js"></script>
+    <script src="/public/js/index.js"></script>
+
+    <!-- History Modal -->
+    {% include 'fragments/modal_history.html' %}
+
+    <!-- Save Modal -->
+    {% include 'fragments/modal_save.html' %}
+</body>
+</html>
