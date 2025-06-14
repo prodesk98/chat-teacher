@@ -32,18 +32,18 @@ function onSubmitSendMsg() {
     const userMessage = document.createElement('div');
     userMessage.className = 'message user bg-primary-50 rounded-xl p-4 mb-4 shadow-sm border border-indigo-100';
     userMessage.innerHTML = `
-                    <div class="flex justify-end">
-                        <div class="text-right max-w-full">
-                            <h3 class="font-medium text-gray-800">You</h3>
-                            <div class="text-gray-700 mt-1">${message}</div>
-                        </div>
-                        <div class="ml-3 mt-0.5 flex-shrink-0">
-                            <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center">
-                                <i class="fas fa-user text-white text-sm"></i>
-                            </div>
-                        </div>
-                    </div>
-                `;
+        <div class="flex justify-end">
+            <div class="text-right max-w-full">
+                <h3 class="font-medium text-gray-800">You</h3>
+                <div class="text-gray-700 mt-1">${message}</div>
+            </div>
+            <div class="ml-3 mt-0.5 flex-shrink-0">
+                <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center">
+                    <i class="fas fa-user text-white text-sm"></i>
+                </div>
+            </div>
+        </div>
+    `;
 
     // Add a user message to chat
     chatContainer.appendChild(userMessage);
