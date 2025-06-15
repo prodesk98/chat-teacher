@@ -194,7 +194,7 @@ function loadChatHistory() {
                     `}
                     <div class="${msg.isUser ? 'text-right max-w-full' : ''}">
                         <h3 class="font-medium text-gray-800">${msg.isUser ? 'You' : 'Study Assistant'}</h3>
-                        <div class="text-gray-700 mt-1">${msg.html}</div>
+                        <div class="text-gray-700 mt-1">${converter.makeHtml(msg.html)}</div>
                     </div>
                     ${msg.isUser ?
                         '<div class="ml-3 mt-0.5 flex-shrink-0">\n' +
