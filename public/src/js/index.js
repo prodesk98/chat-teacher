@@ -167,6 +167,7 @@ function loadChatHistory() {
         // Ensure messages are in the correct format
         messages = messages.map(msg => {
             return {
+                id: msg.id || uuid(),
                 isUser: msg.role === 'user',
                 html: msg.content || ''
             };
@@ -194,7 +195,31 @@ function loadChatHistory() {
                     `}
                     <div class="${msg.isUser ? 'text-right max-w-full' : ''}">
                         <h3 class="font-medium text-gray-800">${msg.isUser ? 'You' : 'Study Assistant'}</h3>
-                        <div class="text-gray-700 mt-1">${converter.makeHtml(msg.html)}</div>
+                        <div class="text-gray-700 mt-1" id="content-${msg.id}">${converter.makeHtml(msg.html)}</div>
+                        ${!msg.isUser && msg.html.length >= 256 ? `
+                            <div class="d-flex">
+                                <button type="button" class="text-gray hover:text-indigo-800 mt-2 text-sm float-end"
+                                        onclick="printContent('${msg.id}')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                         class="icon icon-tabler icons-tabler-outline icon-tabler-printer">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2"/>
+                                        <path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4"/>
+                                        <path d="M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z"/>
+                                    </svg>
+                                </button>
+                                <button type="button" class="text-gray hover:text-indigo-800 mt-2 text-sm float-end mr-2 text-center"
+                                        onclick="speak('${msg.id}')" id="btn-speak-${msg.id}">
+                                        <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-volume">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                            <path d="M15 8a5 5 0 0 1 0 8" />
+                                            <path d="M17.7 5a9 9 0 0 1 0 14" />
+                                            <path d="M6 15h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l3.5 -4.5a.8 .8 0 0 1 1.5 .5v14a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5" />
+                                        </svg>
+                                </button>
+                            </div>
+                        `: ''}
                     </div>
                     ${msg.isUser ?
                         '<div class="ml-3 mt-0.5 flex-shrink-0">\n' +
@@ -216,6 +241,125 @@ function loadChatHistory() {
 
         chatContainer.scrollTop = chatContainer.scrollHeight;
     });
+}
+
+let isSpeaking = false;
+let utterance = null;
+let audio = null;
+
+function fallbackTTS(text) {
+    utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pt-BR';
+    speechSynthesis.speak(utterance);
+    isSpeaking = true;
+    utterance.onend = () => isSpeaking = false;
+    utterance.onerror = () => isSpeaking = false;
+}
+
+async function speak(contentId) {
+    const contentElement = document.getElementById(`content-${contentId}`);
+    if (!contentElement) return;
+
+    const buttonSpeak = document.getElementById(`btn-speak-${contentId}`);
+    if (buttonSpeak) {
+        buttonSpeak.disabled = true;
+        buttonSpeak.classList.add('cursor-not-allowed', 'opacity-50');
+    }
+
+    // Cancelamento se já está falando
+    if (isSpeaking) {
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+        if (utterance) {
+            speechSynthesis.cancel();
+        }
+        isSpeaking = false;
+        return;
+    }
+
+    const summaryMatch = contentElement.innerText.match(/Summary:\s*(.*?)\n/);
+    if (summaryMatch === null) {
+        alert(`Summary not found in content with ID: ${contentId}`);
+        return;
+    }
+    const content = summaryMatch[1].trim();
+
+    try {
+        const response = await call_api("/chat/speak", 'POST', {content});
+
+        if (!response.ok || !response.body) return;
+
+        // Create an audio stream from the response body
+        const reader = response.body.getReader();
+        const chunks = [];
+        let done = false;
+
+        while (!done) {
+            const { value, done: doneReading } = await reader.read();
+            if (value) chunks.push(value);
+            done = doneReading;
+        }
+
+        const audioBlob = new Blob(chunks, { type: "audio/mpeg" });
+        const audioUrl = URL.createObjectURL(audioBlob);
+
+        audio = new Audio(audioUrl);
+        isSpeaking = true;
+
+        audio.play().then(() => {}).catch((error) => {
+            console.error(error)});
+        audio.onended = () => {
+            isSpeaking = false;
+            URL.revokeObjectURL(audioUrl);
+            if (buttonSpeak) {
+                buttonSpeak.disabled = false;
+                buttonSpeak.classList.remove('cursor-not-allowed', 'opacity-50');
+            }
+        };
+        audio.onerror = () => {
+            isSpeaking = false;
+            URL.revokeObjectURL(audioUrl);
+            fallbackTTS(content);
+        };
+    } catch (error) {
+        console.warn("Error fetching audio stream:", error);
+        fallbackTTS(content);
+    }
+}
+
+function printContent(contentId) {
+    const contentElement = document.getElementById(`content-${contentId}`);
+    if (!contentElement) return;
+
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (!printWindow) return;
+
+    const topicMatch = contentElement.innerText.match(/Topic:\s*(.*?)\n/);
+    // If a topic is found, use it as the title; otherwise, use a default title
+    const topicTitle = topicMatch ? topicMatch[1].trim() : 'Chat Teacher';
+    // Write the content to the new window
+    printWindow.document.write(`
+        <html lang="pt-BR">
+            <head>
+                <title>${topicTitle}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    .message { margin-bottom: 20px; }
+                </style>
+            </head>
+            <body>
+                ${contentElement.innerHTML}
+            </body>
+        </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
 }
 
 document.addEventListener('DOMContentLoaded', function () {

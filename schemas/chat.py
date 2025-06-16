@@ -1,6 +1,4 @@
-from typing import Literal
-
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ChatMessageSchema(BaseModel):
@@ -25,3 +23,7 @@ class MessageCreateSchema(BaseModel):
     chat_id: int
     role: str
     content: str
+
+
+class SpeakRequestSchema(BaseModel):
+    content: str = Field(max_length=1024, description="Content to be spoken by the agent.")

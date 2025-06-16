@@ -1,7 +1,12 @@
 from asyncio import to_thread
+from typing import IO
 
+from elevenlabs import VoiceSettings
 from sqlalchemy.orm import Session
+
+from config import env
 from databases.sessions import Chat, Message
+from elevenlabs.client import ElevenLabs
 from schemas import ChatResponseSchema, ChatMessageSchema, ChatCreateSchema, MessageCreateSchema
 
 
@@ -64,6 +69,29 @@ class ChatController:
         finally:
             self._db.close()
 
+    @staticmethod
+    def speak(content: str) -> IO[bytes] | None:
+        if env.ELEVEN_LABS_API_KEY is None or env.ELEVEN_LABS_VOICE_ID is None:
+            return None
+        elevenlabs = ElevenLabs(api_key=env.ELEVEN_LABS_API_KEY)
+        try:
+            audio = elevenlabs.text_to_speech.stream(
+                voice_id=env.ELEVEN_LABS_VOICE_ID,
+                output_format="mp3_22050_32",
+                text=content,
+                model_id=env.ELEVEN_LABS_MODEL_ID,
+                voice_settings=VoiceSettings(
+                    stability=0.5,
+                    similarity_boost=0.75,
+                    style=0.0,
+                    use_speaker_boost=True,
+                    speed=1.0,
+                )
+            )
+            return audio
+        except Exception as e:
+            raise RuntimeError(f"Failed to generate speech: {str(e)}")
+
     async def acreate_chat(self, uuid: str, title: str) -> ChatCreateSchema:
         return await to_thread(self.create_chat, uuid, title)
 
@@ -72,3 +100,6 @@ class ChatController:
 
     async def acreate_message(self, chat_id: int, role: str, content: str) -> MessageCreateSchema:
         return await to_thread(self.create_message, chat_id, role, content)
+
+    async def aspeak(self, content: str) -> IO[bytes] | None:
+        return await to_thread(self.speak, content)

@@ -3,5 +3,6 @@ from .chat import (
     ChatResponseSchema,
     ChatMessageSchema,
     ChatCreateSchema,
-    MessageCreateSchema
+    MessageCreateSchema,
+    SpeakRequestSchema,
 )
