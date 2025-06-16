@@ -6,7 +6,7 @@ services:
     env_file:
       - .env
     volumes:
-      - chat-teacher-data:/data
+      - ./data:/app/data
     ports:
       - "8000:8000"
     environment:
@@ -14,5 +14,3 @@ services:
         - OPENAI_API_KEY=${OPENAI_API_KEY}
         - OPENAI_API_BASE=${OPENAI_API_BASE}
 
-volumes:
-  chat-teacher-data:
