@@ -94,7 +94,7 @@ function onSubmitSendMsg() {
 
     // Create AI "typing" indicator
     const typingIndicator = document.createElement('div');
-    const contentId = `content-${uuid()}`;
+    const Id = uuid();
     typingIndicator.className = 'message ai bg-white rounded-xl p-4 mb-4 shadow-sm border border-gray-100';
     typingIndicator.innerHTML = `
         <div class="flex">
@@ -109,10 +109,32 @@ function onSubmitSendMsg() {
             </div>
             <div>
                 <h3 class="font-medium text-gray-800">Study Assistant</h3>
-                <div class="text-gray-700 mt-1" id="${contentId}">
+                <div class="text-gray-700 mt-1" id="content-${Id}">
                     <span class="typing-dot w-2 h-2 bg-indigo-500 rounded-full inline-block mx-1"></span>
                     <span class="typing-dot w-2 h-2 bg-indigo-500 rounded-full inline-block mx-1"></span>
                     <span class="typing-dot w-2 h-2 bg-indigo-500 rounded-full inline-block mx-1"></span>
+                </div>
+                <div class="d-flex" style="display: none;" id="btns-${Id}">
+                    <button type="button" class="text-gray hover:text-indigo-800 mt-2 text-sm float-end"
+                            onclick="printContent('${Id}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="icon icon-tabler icons-tabler-outline icon-tabler-printer">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2"/>
+                            <path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4"/>
+                            <path d="M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="text-gray hover:text-indigo-800 mt-2 text-sm float-end mr-2 text-center"
+                            onclick="speak('${Id}')" id="btn-speak-${Id}">
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-volume">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M15 8a5 5 0 0 1 0 8" />
+                                <path d="M17.7 5a9 9 0 0 1 0 14" />
+                                <path d="M6 15h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l3.5 -4.5a.8 .8 0 0 1 1.5 .5v14a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5" />
+                            </svg>
+                    </button>
                 </div>
             </div>
         </div>
@@ -133,8 +155,11 @@ function onSubmitSendMsg() {
             return;
         }
         // Update the typing indicator with the AI response
-        const contentHTML = chatContainer.querySelector(`#${contentId}`);
+        const contentHTML = chatContainer.querySelector(`#content-${Id}`);
         contentHTML.innerHTML = converter.makeHtml(responseData.content) || 'No response from AI.';
+        // Show buttons after a response is received
+        const buttons = chatContainer.querySelector(`#btns-${Id}`);
+        if (buttons) buttons.style.display = 'block';
     }).catch(e => {
         console.error('Error sending message:', e)});
 
