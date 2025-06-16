@@ -304,7 +304,7 @@ async function speak(contentId) {
         return;
     }
 
-    const summaryMatch = contentElement.innerText.match(/Summary:\s*(.*?)\n/);
+    const summaryMatch = contentElement.innerText.match(/(?:Summary|Resumo):\s*(.*?)\n/);
     if (summaryMatch === null) {
         alert(`Summary not found in content with ID: ${contentId}`);
         return;
@@ -362,7 +362,7 @@ function printContent(contentId) {
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     if (!printWindow) return;
 
-    const topicMatch = contentElement.innerText.match(/Topic:\s*(.*?)\n/);
+    const topicMatch = contentElement.innerText.match(/(?:Topic|T[óo]pico):\s*(.*?)\n/);
     // If a topic is found, use it as the title; otherwise, use a default title
     const topicTitle = topicMatch ? topicMatch[1].trim() : 'Chat Teacher';
     // Write the content to the new window
