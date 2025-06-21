@@ -362,7 +362,7 @@ function printContent(contentId) {
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     if (!printWindow) return;
 
-    const topicMatch = contentElement.innerText.match(/(?:Topic|T[óo]pico):\s*(.*?)\n/);
+    const topicMatch = contentElement.innerText.match(/(?:Topic|Title|T[óo]pico|T[íi]tulo):\s*(.*?)\n/);
     // If a topic is found, use it as the title; otherwise, use a default title
     const topicTitle = topicMatch ? topicMatch[1].trim() : 'Chat Teacher';
     // Write the content to the new window
